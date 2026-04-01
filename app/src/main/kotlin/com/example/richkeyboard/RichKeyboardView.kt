@@ -6,6 +6,7 @@ import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View
 import android.view.inputmethod.InputConnection
+import android.widget.Button
 import android.widget.FrameLayout
 import android.widget.ImageButton
 import android.widget.LinearLayout
@@ -88,7 +89,7 @@ class RichKeyboardView @JvmOverloads constructor(
     /**
      * Builds the key rows programmatically and adds them to [keyboardContainer].
      *
-     * Each key is a simple [View] with a click listener that commits the
+     * Each key is a [Button] with a click listener that commits the
      * corresponding character via [inputConnection]. For a production keyboard
      * you would replace this with a proper [android.inputmethodservice.KeyboardView]
      * or a RecyclerView-based grid with key repeat, long-press, swipe, etc.
@@ -107,7 +108,6 @@ class RichKeyboardView @JvmOverloads constructor(
                     LayoutParams.MATCH_PARENT,
                     LayoutParams.WRAP_CONTENT
                 ).apply {
-                    // Add vertical spacing between rows (skip first row)
                     if (index > 0) {
                         topMargin = dpToPx(4)
                     }
@@ -134,22 +134,22 @@ class RichKeyboardView @JvmOverloads constructor(
         }
 
         // Shift key (stub)
-        bottomRow.addView(createSpecialKey("\u21E7", 1.5f) {
+        bottomRow.addView(createSpecialKey("SHIFT", 1.5f) {
             // TODO: toggle caps lock / shift state
         })
 
         // Space bar (wide)
-        bottomRow.addView(createSpecialKey("Space", 3f) {
+        bottomRow.addView(createSpecialKey("SPACE", 3f) {
             inputConnection?.commitText(" ", 1)
         })
 
         // Backspace
-        bottomRow.addView(createSpecialKey("\u232B", 1f) {
+        bottomRow.addView(createSpecialKey("DEL", 1f) {
             inputConnection?.deleteSurroundingText(1, 0)
         })
 
         // Enter / Return
-        bottomRow.addView(createSpecialKey("\u21B5", 1.5f) {
+        bottomRow.addView(createSpecialKey("ENTER", 1.5f) {
             inputConnection?.commitText("\n", 1)
         })
 
@@ -157,32 +157,31 @@ class RichKeyboardView @JvmOverloads constructor(
     }
 
     /**
-     * Creates a tappable view representing a single alphanumeric key.
+     * Creates a tappable button representing a single alphanumeric key.
      */
     private fun createKeyView(label: String): View {
-        return com.google.android.material.button.MaterialButton(
-            context, null,
-            com.google.android.material.R.attr.materialButtonOutlinedStyle
+        val btn = Button(context)
+        btn.text = label
+        btn.textSize = 16f
+        btn.isAllCaps = false
+        btn.minWidth = 0
+        btn.minimumWidth = 0
+        btn.setBackgroundColor(0xFF3A3A3C.toInt())
+        btn.setTextColor(0xFFFFFFFF.toInt())
+
+        val keyHeight = dpToPx(44)
+        btn.layoutParams = LinearLayout.LayoutParams(
+            0,
+            keyHeight,
+            1f
         ).apply {
-            text = label
-            textSize = 16f
-            isAllCaps = false
-            minWidth = 0
-            minimumWidth = 0
-            val iconSize = resources.getDimensionPixelSize(android.R.dimen.app_icon_size)
-            val keyHeight = (iconSize * 0.7f).toInt()
-            layoutParams = LinearLayout.LayoutParams(
-                0,
-                keyHeight,
-                1f
-            ).apply {
-                marginStart = dpToPx(2)
-                marginEnd = dpToPx(2)
-            }
-            setOnClickListener {
-                inputConnection?.commitText(label.lowercase(), 1)
-            }
+            marginStart = dpToPx(2)
+            marginEnd = dpToPx(2)
         }
+        btn.setOnClickListener {
+            inputConnection?.commitText(label.lowercase(), 1)
+        }
+        return btn
     }
 
     /**
@@ -193,27 +192,26 @@ class RichKeyboardView @JvmOverloads constructor(
         weight: Float,
         onClick: () -> Unit
     ): View {
-        return com.google.android.material.button.MaterialButton(
-            context, null,
-            com.google.android.material.R.attr.materialButtonOutlinedStyle
+        val btn = Button(context)
+        btn.text = label
+        btn.textSize = 14f
+        btn.isAllCaps = false
+        btn.minWidth = 0
+        btn.minimumWidth = 0
+        btn.setBackgroundColor(0xFF3A3A3C.toInt())
+        btn.setTextColor(0xFFAEAEB2.toInt())
+
+        val keyHeight = dpToPx(44)
+        btn.layoutParams = LinearLayout.LayoutParams(
+            0,
+            keyHeight,
+            weight
         ).apply {
-            text = label
-            textSize = 14f
-            isAllCaps = false
-            minWidth = 0
-            minimumWidth = 0
-            val iconSize = resources.getDimensionPixelSize(android.R.dimen.app_icon_size)
-            val keyHeight = (iconSize * 0.7f).toInt()
-            layoutParams = LinearLayout.LayoutParams(
-                0,
-                keyHeight,
-                weight
-            ).apply {
-                marginStart = dpToPx(2)
-                marginEnd = dpToPx(2)
-            }
-            setOnClickListener { onClick() }
+            marginStart = dpToPx(2)
+            marginEnd = dpToPx(2)
         }
+        btn.setOnClickListener { onClick() }
+        return btn
     }
 
     // Helpers

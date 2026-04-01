@@ -25,10 +25,11 @@ jobs:
           gradle-version: 8.5
 
       - name: Build debug APK
-        run: gradle assembleDebug
+        run: gradle assembleDebug --stacktrace --info
 
       - name: Upload debug APK artifact
         uses: actions/upload-artifact@v4
+        if: success()
         with:
           name: rich-keyboard-debug-apk
           path: app/build/outputs/apk/debug/*.apk
