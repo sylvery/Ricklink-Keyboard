@@ -39,8 +39,8 @@
             android:background="@drawable/btn_toolbar_bg"
             android:src="@android:drawable/ic_menu_edit"
             android:paddingHorizontal="12dp"
-            android:contentDescription="Paste Rich Text"
-            android:tooltipText="Paste Rich Text" />
+            android:contentDescription="@string/paste_rich_desc"
+            android:tooltipText="@string/paste_rich_desc" />
 
         <ImageButton
             android:id="@+id/btn_paste_plain"
@@ -50,8 +50,8 @@
             android:background="@drawable/btn_toolbar_bg"
             android:src="@android:drawable/ic_menu_save"
             android:paddingHorizontal="12dp"
-            android:contentDescription="Paste Plain Text"
-            android:tooltipText="Paste Plain Text" />
+            android:contentDescription="@string/paste_plain_desc"
+            android:tooltipText="@string/paste_plain_desc" />
 
         <ImageButton
             android:id="@+id/btn_settings"
@@ -60,8 +60,8 @@
             android:background="@drawable/btn_toolbar_bg"
             android:src="@android:drawable/ic_menu_preferences"
             android:paddingHorizontal="12dp"
-            android:contentDescription="Settings"
-            android:tooltipText="Settings" />
+            android:contentDescription="@string/settings_desc"
+            android:tooltipText="@string/settings_desc" />
     </LinearLayout>
 
     <!-- Main keyboard area -->

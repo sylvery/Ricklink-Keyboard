@@ -8,7 +8,7 @@
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Rich Keyboard Settings"
+        android:text="@string/settings_title"
         android:textSize="24sp"
         android:textStyle="bold"
         android:layout_marginBottom="16dp" />
@@ -16,14 +16,14 @@
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="This keyboard preserves hyperlinks, bold, and italic formatting when pasting rich text from the clipboard into apps that support the Commit Content API."
+        android:text="@string/settings_description"
         android:textSize="14sp"
         android:layout_marginBottom="24dp" />
 
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="To enable this keyboard:"
+        android:text="@string/settings_enable_title"
         android:textSize="16sp"
         android:textStyle="bold"
         android:layout_marginBottom="8dp" />
@@ -31,7 +31,7 @@
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="1. Go to Settings → System → Languages → On-screen keyboard\n2. Tap \"Manage on-screen keyboards\"\n3. Enable \"Rich Keyboard\""
+        android:text="@string/settings_enable_steps"
         android:textSize="14sp"
         android:lineSpacingMultiplier="1.4" />
 

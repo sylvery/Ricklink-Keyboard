@@ -2,4 +2,11 @@
 <resources>
     <string name="app_name">Rich Keyboard</string>
     <string name="ime_name">Rich Keyboard</string>
+    <string name="settings_title">Rich Keyboard Settings</string>
+    <string name="settings_description">This keyboard preserves hyperlinks, bold, and italic formatting when pasting rich text from the clipboard into apps that support the Commit Content API.</string>
+    <string name="settings_enable_title">To enable this keyboard:</string>
+    <string name="settings_enable_steps">1. Go to Settings → System → Languages → On-screen keyboard\n2. Tap "Manage on-screen keyboards"\n3. Enable "Rich Keyboard"</string>
+    <string name="paste_rich_desc">Paste Rich Text</string>
+    <string name="paste_plain_desc">Paste Plain Text</string>
+    <string name="settings_desc">Settings</string>
 </resources>

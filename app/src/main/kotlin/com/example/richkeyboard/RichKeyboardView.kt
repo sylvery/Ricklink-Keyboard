@@ -33,7 +33,6 @@ class RichKeyboardView @JvmOverloads constructor(
 
     // ── Child views ──────────────────────────────────────────────────────
 
-    private val toolbar: LinearLayout
     private val btnPasteRich: ImageButton
     private val btnPastePlain: ImageButton
     private val btnSettings: ImageButton
@@ -59,11 +58,10 @@ class RichKeyboardView @JvmOverloads constructor(
         LayoutInflater.from(context).inflate(R.layout.keyboard_view, this, true)
 
         // Bind views
-        toolbar = findViewById(R.id.toolbar)
-        btnPasteRich = findViewById(R.id.btn_paste_rich)
-        btnPastePlain = findViewById(R.id.btn_paste_plain)
-        btnSettings = findViewById(R.id.btn_settings)
-        keyboardContainer = findViewById(R.id.keyboard_container)
+        btnPasteRich = findViewById<ImageButton>(R.id.btn_paste_rich)
+        btnPastePlain = findViewById<ImageButton>(R.id.btn_paste_plain)
+        btnSettings = findViewById<ImageButton>(R.id.btn_settings)
+        keyboardContainer = findViewById<FrameLayout>(R.id.keyboard_container)
 
         // Wire click listeners
         btnPasteRich.setOnClickListener { onPasteRichClickListener?.invoke() }
@@ -101,16 +99,16 @@ class RichKeyboardView @JvmOverloads constructor(
             "ZXCVBNM"
         )
 
-        for (rowText in rows) {
+        for ((index, rowText) in rows.withIndex()) {
             val row = LinearLayout(context).apply {
                 orientation = LinearLayout.HORIZONTAL
                 layoutParams = LayoutParams(
                     LayoutParams.MATCH_PARENT,
                     LayoutParams.WRAP_CONTENT
                 ).apply {
-                    // Add vertical spacing between rows
-                    if (indexOfChild(this@apply) > 0) {
-                        topMargin = 2 // dp converted below
+                    // Add vertical spacing between rows (skip first row)
+                    if (index > 0) {
+                        topMargin = 4
                     }
                 }
             }
