@@ -89,17 +89,32 @@ class RichInputService : InputMethodService() {
     // Input view
     // ──────────────────────────────────────────────────────────────────────
 
+    private var keyboardView: RichKeyboardView? = null
+
     /**
-     * Inflates the keyboard layout. Replace this with your actual keyboard
-     * view (e.g. a custom [KeyboardView]) when you build the UI layer.
+     * Inflates and configures the custom [RichKeyboardView].
      *
-     * For now this returns a minimal placeholder so the service compiles
-     * and can be tested end-to-end with a "Paste Rich" debug button.
+     * Toolbar buttons are wired to their respective paste / settings actions.
+     * The [InputConnection] is passed to the view in [onStartInputView] so
+     * that key presses can write text to the current editor.
      */
     override fun onCreateInputView(): View {
-        // TODO: inflate a real keyboard layout, e.g.
-        //   return layoutInflater.inflate(R.layout.keyboard_view, null)
-        return View(this)
+        keyboardView = RichKeyboardView(this).apply {
+            onPasteRichClickListener = { onPasteRequested() }
+            onPastePlainClickListener = { onPastePlainRequested() }
+            onSettingsClickListener = { /* TODO: open IME settings activity */ }
+        }
+        return keyboardView!!
+    }
+
+    /**
+     * Called each time the input view is shown (e.g. when the user taps an
+     * EditText). We refresh the [InputConnection] on the keyboard view so
+     * that key events are routed to the correct editor.
+     */
+    override fun onStartInputView(info: EditorInfo, restarting: Boolean) {
+        super.onStartInputView(info, restarting)
+        keyboardView?.setInputConnection(currentInputConnection)
     }
 
     // ──────────────────────────────────────────────────────────────────────
@@ -152,6 +167,24 @@ class RichInputService : InputMethodService() {
             if (!editorSupportsHtml) Log.d(TAG, "Editor does not support rich content – using plain text fallback.")
             pasteAsPlainText(ic, clipItem)
         }
+    }
+
+    /**
+     * Forces a plain-text paste regardless of clipboard content or editor
+     * capabilities. Useful as a manual escape hatch when the user wants
+     * to strip formatting intentionally.
+     */
+    fun onPastePlainRequested() {
+        val ic: InputConnection = currentInputConnection ?: run {
+            Log.w(TAG, "No InputConnection available – ignoring paste request.")
+            return
+        }
+        val clip: ClipData? = clipboardManager?.primaryClip
+        if (clip == null || clip.itemCount == 0) {
+            Log.d(TAG, "Clipboard is empty.")
+            return
+        }
+        pasteAsPlainText(ic, clip.getItemAt(0))
     }
 
     // ──────────────────────────────────────────────────────────────────────
