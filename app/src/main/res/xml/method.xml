@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    Input method metadata. This file is referenced from AndroidManifest.xml
+    via the <meta-data android:resource="@xml/method" /> tag on the IME service.
+
+    - android:isDefault="true" suggests this keyboard as a default option
+      (users still must enable it in Settings).
+    - Supports basic text input types. Rich content support is negotiated
+      at runtime via EditorInfo.contentMimeTypes in RichInputService.
+-->
+<input-method xmlns:android="http://schemas.android.com/apk/res/android"
+    android:isDefault="true">
+    <subtype
+        android:label="%s"
+        android:imeSubtypeMode="keyboard"
+        android:imeSubtypeLocale="en_US" />
+</input-method>
