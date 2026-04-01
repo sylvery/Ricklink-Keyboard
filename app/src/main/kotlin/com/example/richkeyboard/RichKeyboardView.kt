@@ -32,14 +32,14 @@ class RichKeyboardView @JvmOverloads constructor(
     defStyleAttr: Int = 0
 ) : FrameLayout(context, attrs, defStyleAttr) {
 
-    // ── Child views ──────────────────────────────────────────────────────
+    // Child views
 
     private val btnPasteRich: ImageButton
     private val btnPastePlain: ImageButton
     private val btnSettings: ImageButton
     private val keyboardContainer: FrameLayout
 
-    // ── Callbacks (set by the hosting IME service) ───────────────────────
+    // Callbacks (set by the hosting IME service)
 
     /** Invoked when the user taps the "Paste Rich" toolbar button. */
     var onPasteRichClickListener: (() -> Unit)? = null
@@ -50,7 +50,7 @@ class RichKeyboardView @JvmOverloads constructor(
     /** Invoked when the user taps the "Settings" toolbar button. */
     var onSettingsClickListener: (() -> Unit)? = null
 
-    // ── Active input connection ──────────────────────────────────────────
+    // Active input connection
 
     private var inputConnection: InputConnection? = null
 
@@ -73,7 +73,7 @@ class RichKeyboardView @JvmOverloads constructor(
         inflateKeyboardKeys()
     }
 
-    // ── Public API ───────────────────────────────────────────────────────
+    // Public API
 
     /**
      * Sets the [InputConnection] that key-press handlers will write to.
@@ -83,7 +83,7 @@ class RichKeyboardView @JvmOverloads constructor(
         inputConnection = ic
     }
 
-    // ── Key layout ───────────────────────────────────────────────────────
+    // Key layout
 
     /**
      * Builds the key rows programmatically and adds them to [keyboardContainer].
@@ -216,7 +216,7 @@ class RichKeyboardView @JvmOverloads constructor(
         }
     }
 
-    // ── Helpers ──────────────────────────────────────────────────────────
+    // Helpers
 
     /**
      * Converts a value in density-independent pixels (dp) to actual pixels

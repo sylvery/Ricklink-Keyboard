@@ -50,9 +50,9 @@ class RichInputService : InputMethodService() {
         )
     }
 
-    // ──────────────────────────────────────────────────────────────────────
+    // -----------------------------------------------------------------------
     // Clipboard monitoring
-    // ──────────────────────────────────────────────────────────────────────
+    // -----------------------------------------------------------------------
 
     private var clipboardManager: ClipboardManager? = null
 
@@ -68,26 +68,26 @@ class RichInputService : InputMethodService() {
         // that paste operations are instant. For the skeleton we simply log.
     }
 
-    // ──────────────────────────────────────────────────────────────────────
+    // -----------------------------------------------------------------------
     // Lifecycle
-    // ──────────────────────────────────────────────────────────────────────
+    // -----------------------------------------------------------------------
 
     override fun onCreate() {
         super.onCreate()
         clipboardManager = getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
         clipboardManager?.addPrimaryClipChangedListener(clipboardListener)
-        Log.d(TAG, "RichInputService created – clipboard listener registered.")
+        Log.d(TAG, "RichInputService created - clipboard listener registered.")
     }
 
     override fun onDestroy() {
         clipboardManager?.removePrimaryClipChangedListener(clipboardListener)
-        Log.d(TAG, "RichInputService destroyed – clipboard listener unregistered.")
+        Log.d(TAG, "RichInputService destroyed - clipboard listener unregistered.")
         super.onDestroy()
     }
 
-    // ──────────────────────────────────────────────────────────────────────
+    // -----------------------------------------------------------------------
     // Input view
-    // ──────────────────────────────────────────────────────────────────────
+    // -----------------------------------------------------------------------
 
     private var keyboardView: RichKeyboardView? = null
 
@@ -117,9 +117,9 @@ class RichInputService : InputMethodService() {
         keyboardView?.setInputConnection(currentInputConnection)
     }
 
-    // ──────────────────────────────────────────────────────────────────────
+    // -----------------------------------------------------------------------
     // Rich-text paste logic
-    // ──────────────────────────────────────────────────────────────────────
+    // -----------------------------------------------------------------------
 
     /**
      * Call this method from a paste button in your keyboard UI.
@@ -129,15 +129,15 @@ class RichInputService : InputMethodService() {
      */
     fun onPasteRequested() {
         val ic: InputConnection = currentInputConnection ?: run {
-            Log.w(TAG, "No InputConnection available – ignoring paste request.")
+            Log.w(TAG, "No InputConnection available - ignoring paste request.")
             return
         }
         val editorInfo: EditorInfo = currentInputEditorInfo ?: run {
-            Log.w(TAG, "No EditorInfo available – ignoring paste request.")
+            Log.w(TAG, "No EditorInfo available - ignoring paste request.")
             return
         }
 
-        // ── 1. Read clipboard ────────────────────────────────────────────
+        // 1. Read clipboard
         val clip: ClipData? = clipboardManager?.primaryClip
         if (clip == null || clip.itemCount == 0) {
             Log.d(TAG, "Clipboard is empty.")
@@ -146,14 +146,14 @@ class RichInputService : InputMethodService() {
         val clipDescription: ClipDescription? = clip.description
         val clipItem: ClipData.Item = clip.getItemAt(0)
 
-        // ── 2. Check if the clipboard contains HTML ──────────────────────
+        // 2. Check if the clipboard contains HTML
         val hasHtml = clipDescription?.hasMimeType(MIME_TYPE_TEXT_HTML) == true
 
-        // ── 3. Check if the editor supports rich content ─────────────────
+        // 3. Check if the editor supports rich content
         val editorSupportsHtml = editorSupportsRichContent(editorInfo)
 
         if (hasHtml && editorSupportsHtml) {
-            // ── 4a. Rich paste via commitContent ─────────────────────────
+            // 4a. Rich paste via commitContent
             val htmlText: String? = clipItem.htmlText?.toString()
             if (htmlText != null) {
                 pasteAsRichContent(ic, htmlText)
@@ -162,9 +162,9 @@ class RichInputService : InputMethodService() {
                 pasteAsPlainText(ic, clipItem)
             }
         } else {
-            // ── 4b. Fallback: plain text ─────────────────────────────────
-            if (!hasHtml) Log.d(TAG, "Clipboard does not contain HTML – using plain text fallback.")
-            if (!editorSupportsHtml) Log.d(TAG, "Editor does not support rich content – using plain text fallback.")
+            // 4b. Fallback: plain text
+            if (!hasHtml) Log.d(TAG, "Clipboard does not contain HTML - using plain text fallback.")
+            if (!editorSupportsHtml) Log.d(TAG, "Editor does not support rich content - using plain text fallback.")
             pasteAsPlainText(ic, clipItem)
         }
     }
@@ -176,7 +176,7 @@ class RichInputService : InputMethodService() {
      */
     fun onPastePlainRequested() {
         val ic: InputConnection = currentInputConnection ?: run {
-            Log.w(TAG, "No InputConnection available – ignoring paste request.")
+            Log.w(TAG, "No InputConnection available - ignoring paste request.")
             return
         }
         val clip: ClipData? = clipboardManager?.primaryClip
@@ -187,9 +187,9 @@ class RichInputService : InputMethodService() {
         pasteAsPlainText(ic, clip.getItemAt(0))
     }
 
-    // ──────────────────────────────────────────────────────────────────────
+    // -----------------------------------------------------------------------
     // Capability check
-    // ──────────────────────────────────────────────────────────────────────
+    // -----------------------------------------------------------------------
 
     /**
      * Determines whether the current editor advertises rich-content support
@@ -227,9 +227,9 @@ class RichInputService : InputMethodService() {
         return false
     }
 
-    // ──────────────────────────────────────────────────────────────────────
+    // -----------------------------------------------------------------------
     // Commit strategies
-    // ──────────────────────────────────────────────────────────────────────
+    // -----------------------------------------------------------------------
 
     /**
      * Sends the HTML content to the editor using the Commit Content API.
@@ -244,27 +244,19 @@ class RichInputService : InputMethodService() {
     private fun pasteAsRichContent(ic: InputConnection, htmlContent: String) {
         Log.d(TAG, "Pasting rich HTML content (${htmlContent.length} chars) via commitContent.")
 
-        // Create an InputContentInfo that carries the HTML payload.
-        // The content URI can be used for content-provider backed data;
-        // for clipboard HTML we pass the string directly via extras.
         val inputContentInfo = InputContentInfo(
-            /* contentUri = */ android.net.Uri.EMPTY,
-            /* description  = */ ClipDescription(
-                "Rich text from clipboard",
-                SUPPORTED_CONTENT_MIME_TYPES
-            ),
-            /* linkUri      = */ null
+            android.net.Uri.EMPTY,
+            ClipDescription("Rich text from clipboard", SUPPORTED_CONTENT_MIME_TYPES),
+            null
         )
 
-        // Attach the actual HTML string in the extras bundle so the
-        // receiving editor can retrieve it.
         val extras = Bundle().apply {
             putString("com.example.richkeyboard.EXTRA_HTML_CONTENT", htmlContent)
         }
 
-        val consumed = ic.commitContent(inputContentInfo, /* flags */ 0, extras)
+        val consumed = ic.commitContent(inputContentInfo, 0, extras)
         if (!consumed) {
-            Log.w(TAG, "Editor did not consume commitContent – falling back to plain text.")
+            Log.w(TAG, "Editor did not consume commitContent - falling back to plain text.")
             pasteAsPlainText(ic, null, fallbackText = htmlContent)
         }
     }
@@ -291,12 +283,12 @@ class RichInputService : InputMethodService() {
         }
 
         Log.d(TAG, "Pasting plain text: \"$plainText\"")
-        ic.commitText(plainText, /* newCursorPosition */ 1)
+        ic.commitText(plainText, 1)
     }
 
-    // ──────────────────────────────────────────────────────────────────────
+    // -----------------------------------------------------------------------
     // Helpers
-    // ──────────────────────────────────────────────────────────────────────
+    // -----------------------------------------------------------------------
 
     /**
      * Very basic HTML-to-plain-text conversion for fallback scenarios.
@@ -305,7 +297,7 @@ class RichInputService : InputMethodService() {
      */
     private fun htmlToPlainText(html: CharSequence): String {
         return html.toString()
-            .replace(Regex("<[^>]*>"), "")   // strip tags
+            .replace(Regex("<[^>]*>"), "")
             .replace("&nbsp;", " ")
             .replace("&amp;", "&")
             .replace("&lt;", "<")
