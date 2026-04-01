@@ -2,6 +2,7 @@ package com.example.richkeyboard
 
 import android.content.Context
 import android.util.AttributeSet
+import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View
 import android.view.inputmethod.InputConnection
@@ -108,7 +109,7 @@ class RichKeyboardView @JvmOverloads constructor(
                 ).apply {
                     // Add vertical spacing between rows (skip first row)
                     if (index > 0) {
-                        topMargin = 4
+                        topMargin = dpToPx(4)
                     }
                 }
             }
@@ -127,11 +128,13 @@ class RichKeyboardView @JvmOverloads constructor(
             layoutParams = LayoutParams(
                 LayoutParams.MATCH_PARENT,
                 LayoutParams.WRAP_CONTENT
-            )
+            ).apply {
+                topMargin = dpToPx(4)
+            }
         }
 
         // Shift key (stub)
-        bottomRow.addView(createSpecialKey("⇧", 1.5f) {
+        bottomRow.addView(createSpecialKey("\u21E7", 1.5f) {
             // TODO: toggle caps lock / shift state
         })
 
@@ -141,12 +144,12 @@ class RichKeyboardView @JvmOverloads constructor(
         })
 
         // Backspace
-        bottomRow.addView(createSpecialKey("⌫", 1f) {
+        bottomRow.addView(createSpecialKey("\u232B", 1f) {
             inputConnection?.deleteSurroundingText(1, 0)
         })
 
         // Enter / Return
-        bottomRow.addView(createSpecialKey("↵", 1.5f) {
+        bottomRow.addView(createSpecialKey("\u21B5", 1.5f) {
             inputConnection?.commitText("\n", 1)
         })
 
@@ -166,13 +169,15 @@ class RichKeyboardView @JvmOverloads constructor(
             isAllCaps = false
             minWidth = 0
             minimumWidth = 0
+            val iconSize = resources.getDimensionPixelSize(android.R.dimen.app_icon_size)
+            val keyHeight = (iconSize * 0.7f).toInt()
             layoutParams = LinearLayout.LayoutParams(
                 0,
-                resources.getDimensionPixelSize(android.R.dimen.app_icon_size),
+                keyHeight,
                 1f
             ).apply {
-                marginStart = 2
-                marginEnd = 2
+                marginStart = dpToPx(2)
+                marginEnd = dpToPx(2)
             }
             setOnClickListener {
                 inputConnection?.commitText(label.lowercase(), 1)
@@ -197,15 +202,31 @@ class RichKeyboardView @JvmOverloads constructor(
             isAllCaps = false
             minWidth = 0
             minimumWidth = 0
+            val iconSize = resources.getDimensionPixelSize(android.R.dimen.app_icon_size)
+            val keyHeight = (iconSize * 0.7f).toInt()
             layoutParams = LinearLayout.LayoutParams(
                 0,
-                resources.getDimensionPixelSize(android.R.dimen.app_icon_size),
+                keyHeight,
                 weight
             ).apply {
-                marginStart = 2
-                marginEnd = 2
+                marginStart = dpToPx(2)
+                marginEnd = dpToPx(2)
             }
             setOnClickListener { onClick() }
         }
+    }
+
+    // ── Helpers ──────────────────────────────────────────────────────────
+
+    /**
+     * Converts a value in density-independent pixels (dp) to actual pixels
+     * based on the current display density.
+     */
+    private fun dpToPx(dp: Int): Int {
+        return TypedValue.applyDimension(
+            TypedValue.COMPLEX_UNIT_DIP,
+            dp.toFloat(),
+            resources.displayMetrics
+        ).toInt()
     }
 }
